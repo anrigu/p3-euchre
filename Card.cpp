@@ -20,7 +20,6 @@ constexpr const char* const Card::RANK_JACK;
 constexpr const char* const Card::RANK_QUEEN;
 constexpr const char* const Card::RANK_KING;
 constexpr const char* const Card::RANK_ACE;
-
 constexpr const char* const Card::SUIT_SPADES;
 constexpr const char* const Card::SUIT_HEARTS;
 constexpr const char* const Card::SUIT_CLUBS;
