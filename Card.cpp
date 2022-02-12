@@ -174,19 +174,50 @@ bool operator!=(const Card &lhs, const Card &rhs) {
 //REQUIRES suit is a valid suit
 //EFFECTS returns the next suit, which is the suit of the same color
 std::string Suit_next(const std::string &suit) {
-
+    if (suit == SUIT_HEARTS) {
+        return SUIT_DIAMONDS;
+    }
+    else if (suit == SUIT_DIAMONDS) {
+        return SUIT_HEARTS;
+    }
+    else if (suit == SUIT_SPADES) {
+        return SUIT_CLUBS;
+    }
+    else {
+        return SUIT_SPADES;
+    }
 }
 
 //EFFECTS Prints Card to stream, for example "Two of Spades"
-std::ostream & operator<<(std::ostream &os, const Card &card);
+std::ostream& operator<<(std::ostream& os, const Card& card) {
+    os << card.get_rank() << " of " << card.get_suit();
+}
+
 
 //REQUIRES trump is a valid suit
 //EFFECTS Returns true if a is lower value than b.  Uses trump to determine
 // order, as described in the spec.
-bool Card_less(const Card &a, const Card &b, const std::string &trump);
+bool Card_less(const Card& a, const Card& b, const std::string& trump) {
+    if (b.get_suit(trump) && a.get_suit(trump)) {
+        if (a.get_rank() == ) {
+            return true;
+       }
+    }
+    else if (b.getsuit(trump) && (!a.getsuit(trump)) {
+        return true;
+    }
+    else if (a.is_left_bower(trump) && b.is_Right_bower(trump)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 //REQUIRES trump is a valid suit
 //EFFECTS Returns true if a is lower value than b.  Uses both the trump suit
 //  and the suit led to determine order, as described in the spec.
-bool Card_less(const Card &a, const Card &b, const Card &led_card,
-               const std::string &trump);
+bool Card_less(const Card& a, const Card& b, const Card& led_card,
+    const std::string& trump) {
+
+}
