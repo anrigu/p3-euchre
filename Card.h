@@ -54,7 +54,7 @@ public:
   //REQUIRES trump is a valid suit
   //EFFECTS Returns the suit
   //HINT: the left bower is the trump suit!
-  std::string get_suit(const std::string &trump) const;
+  std::string get_suit(const std::string& trump) const;
 
   //EFFECTS Returns true if card is a face card (Jack, Queen, King or Ace)
   bool is_face() const;

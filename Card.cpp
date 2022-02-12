@@ -25,7 +25,57 @@ constexpr const char* const Card::SUIT_HEARTS;
 constexpr const char* const Card::SUIT_CLUBS;
 constexpr const char* const Card::SUIT_DIAMONDS;
 
-// add your code below
+//EFFECTS Initializes Card to the Two of Spades
+Card::Card() {
+	rank = RANK_TWO;
+	suit = SUIT_SPADES;
+}
+
+//REQUIRES rank is one of "Two", "Three", "Four", "Five", "Six", "Seven",
+//  "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace"
+//  suit is one of "Spades", "Hearts", "Clubs", "Diamonds"
+//EFFECTS Initializes Card to specified rank and suit
+Card(const std::string& rank_in, const std::string& suit_in):
+	rank(rank_in), suit(suit_in)
+{};
+
+//EFFECTS Returns the rank
+std::string Card::get_rank() const {
+	return rank;
+}
+
+//EFFECTS Returns the suit.  Does not consider trump.
+std::string Card::get_suit() const {
+	return suit;
+}
+
+//REQUIRES trump is a valid suit
+//EFFECTS Returns the suit
+//HINT: the left bower is the trump suit!
+std::string Card::get_suit(const std::string& trump) const {
+	
+}
+
+//EFFECTS Returns true if card is a face card (Jack, Queen, King or Ace)
+bool Card::is_face() const {
+	if (getrank() == SUIT_JACK || getrank() == SUIT_QUEEN || getrank() == SUIT_KING || getrank() == SUIT_ACE) {
+		return true;
+	}
+	return false;
+}
+
+//REQUIRES trump is a valid suit
+//EFFECTS Returns true if card is the Jack of the trump suit
+bool Card::is_right_bower(const std::string& trump) const;
+
+//REQUIRES trump is a valid suit
+//EFFECTS Returns true if card is the Jack of the next suit
+bool Card::is_left_bower(const std::string& trump) const;
+
+//REQUIRES trump is a valid suit
+//EFFECTS Returns true if the card is a trump card.  All cards of the trump
+// suit are trump cards.  The left bower is also a trump card.
+bool Card::is_trump(const std::string& trump) const;
 
 
 // NOTE: We HIGHLY recommend you check out the operator overloading
