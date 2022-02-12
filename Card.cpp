@@ -101,32 +101,81 @@ bool Card::is_trump(const std::string& trump) const {
 //EFFECTS Returns true if lhs is lower value than rhs.
 //  Does not consider trump.
 bool operator<(const Card &lhs, const Card &rhs) {
-
+    int lhsRank = 0;
+    int rhsRank = 0;
+    for (int i = 0; i < NUM_RANKS; i++) {
+        if (lhs.get_rank() == RANK_NAMES_BY_WEIGHT[i]) {
+            lhsRank = i;
+        }
+        if (rhs.get_rank() == RANK_NAMES_BY_WEIGHT[i]) {
+            rhsRank = i;
+        }
+    }
+    if (rhsRank > lhsRank) {
+        return true;
+    }
+    else if (rhsRank == lhsRank) {
+        int lhsSuit = 0;
+        int rhsSuit = 0;
+        for (int j = 0; j < NUM_SUITS; j++) {
+            if (lhs.get_suit() == SUIT_NAMES_BY_WEIGHT[j]) {
+                lhsSuit = j;
+            }
+            if (rhs.get_suit() == SUIT_NAMES_BY_WEIGHT[j]) {
+                rhsRank = j;
+            }
+        }
+        if (rhsSuit > lhsSuit) {
+            return true;
+        }
+    }
+    return false;
 }
 
 //EFFECTS Returns true if lhs is lower value than rhs or the same card as rhs.
 //  Does not consider trump.
-bool operator<=(const Card &lhs, const Card &rhs);
+bool operator<=(const Card &lhs, const Card &rhs) {
+    if (lhs < rhs || lhs == rhs) {
+        return true;
+    }
+    return false;
+}
 
 //EFFECTS Returns true if lhs is higher value than rhs.
 //  Does not consider trump.
-bool operator>(const Card &lhs, const Card &rhs);
+bool operator>(const Card &lhs, const Card &rhs) {
+    return !(lhs < rhs);
+}
 
 //EFFECTS Returns true if lhs is higher value than rhs or the same card as rhs.
 //  Does not consider trump.
-bool operator>=(const Card &lhs, const Card &rhs);
+bool operator>=(const Card &lhs, const Card &rhs) {
+    if (lhs > rhs || lhs == rhs) {
+        return true;
+    }
+    return false;
+}
 
 //EFFECTS Returns true if lhs is same card as rhs.
 //  Does not consider trump.
-bool operator==(const Card &lhs, const Card &rhs);
+bool operator==(const Card &lhs, const Card &rhs) {
+    if (!(lhs > rhs) && !(lhs < rhs)) {
+        return true;
+    }
+    return false;
+}
 
 //EFFECTS Returns true if lhs is not the same card as rhs.
 //  Does not consider trump.
-bool operator!=(const Card &lhs, const Card &rhs);
+bool operator!=(const Card &lhs, const Card &rhs) {
+    return !(lhs == rhs);
+}
 
 //REQUIRES suit is a valid suit
 //EFFECTS returns the next suit, which is the suit of the same color
-std::string Suit_next(const std::string &suit);
+std::string Suit_next(const std::string &suit) {
+
+}
 
 //EFFECTS Prints Card to stream, for example "Two of Spades"
 std::ostream & operator<<(std::ostream &os, const Card &card);
