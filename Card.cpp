@@ -99,14 +99,17 @@ bool operator<(const Card &lhs, const Card &rhs) {
             lhsSuit = j;
         }
         if (rhs.get_suit() == SUIT_NAMES_BY_WEIGHT[j]) {
-            rhsRank = j;
+            rhsSuit = j;
         }
     }
-    if (rhsSuit > lhsSuit) {
+    if (lhsSuit < rhsSuit) {
         return true;
     }
     else if (rhsSuit == lhsSuit) {
-        return rhsRank > lhsRank;
+        if (rhsRank > lhsRank) {
+            return true;
+        }
+        return false;
     }
     else {
         //lhsSuit < rhsSuit
