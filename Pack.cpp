@@ -54,6 +54,7 @@ void Pack::reset() {
 //          performs an in shuffle seven times. See
 //          https://en.wikipedia.org/wiki/In_shuffle.
 void Pack::shuffle() {
+    //Just to push
     array<Card, PACK_SIZE/2>cards_top;
     array<Card, PACK_SIZE/2>cards_bottom;
     for (int j = 0; j < 7; j++) {
