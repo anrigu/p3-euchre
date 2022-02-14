@@ -78,5 +78,10 @@ void Pack::shuffle() {
 
 // EFFECTS: returns true if there are no more cards left in the pack
 bool Pack::empty() const {
-
+    if (cards.empty() == 1) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
