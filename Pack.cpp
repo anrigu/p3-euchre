@@ -1,3 +1,4 @@
+// Project UID 1d9f47bfc76643019cfbf037641defe1
 #include "Pack.h"
 #include "Card.h"
 #include <array>
@@ -22,11 +23,21 @@ Pack::Pack() {
   //           format required by the project specification
   // MODIFIES: pack_input
   // EFFECTS: Initializes Pack by reading from pack_input.
-  Pack(std::istream& pack_input);
+  Pack::Pack(std::istream & pack_input) {
+        string str = " ";
+        // is this right? just a lil confused
+        for (int i = 0; i < PACK_SIZE; i++) {
+            pack_input >> card[i].get_rank() >> str >> card[i].get_suit();
+        }
+  }
 
   // REQUIRES: cards remain in the Pack
   // EFFECTS: Returns the next card in the pack and increments the next index
-  Card deal_one();
+  Card Pack::deal_one() {
+      int index = 0;
+    //next index in a temporary variable, increment the index, and return the next card using the index of the temporary variable
+       
+  }
 
   // EFFECTS: Resets next index to first card in the Pack
   void reset();
