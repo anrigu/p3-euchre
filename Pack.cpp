@@ -1,5 +1,3 @@
-// Project UID 1d9f47bfc76643019cfbf037641defe1
-
 #include "Pack.h"
 #include <array>
 #include <string>
@@ -23,27 +21,15 @@ Pack::Pack() {
     next = 0;
 }
 
-// REQUIRES: pack_input contains a representation of a Pack in the
-//           format required by the project specification
-// MODIFIES: pack_input
-// EFFECTS: Initializes Pack by reading from pack_input.
-Pack::Pack(std::istream& pack_input) {
-    string rank;
-    string buffer;
-    string suit;
-    int i = 0;
-    while (pack_input >> rank >> buffer >> suit) {
-        cards[i] = Card(rank,suit);
-        i++;
-    }
-    next = 0;
-}
+  // REQUIRES: pack_input contains a representation of a Pack in the
+  //           format required by the project specification
+  // MODIFIES: pack_input
+  // EFFECTS: Initializes Pack by reading from pack_input.
+  Pack(std::istream& pack_input);
 
-// REQUIRES: cards remain in the Pack
-// EFFECTS: Returns the next card in the pack and increments the next index
-Card Pack::deal_one() {
-    return cards[next++];
-}
+  // REQUIRES: cards remain in the Pack
+  // EFFECTS: Returns the next card in the pack and increments the next index
+  Card deal_one();
 
 // EFFECTS: Resets next index to first card in the Pack
 void Pack::reset() {
