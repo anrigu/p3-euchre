@@ -15,7 +15,6 @@ Card::Card()
 //  suit is one of "Spades", "Hearts", "Clubs", "Diamonds"
 //EFFECTS Initializes Card to specified rank and suit
 Card::Card(const std::string& rank_in, const std::string& suit_in):
-  //DELETE ME
     rank(rank_in), suit(suit_in)
 {};
 
