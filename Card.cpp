@@ -31,7 +31,7 @@ Card::Card()
 //  "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace"
 //  suit is one of "Spades", "Hearts", "Clubs", "Diamonds"
 //EFFECTS Initializes Card to specified rank and suit
-Card::Card(const std::string& rank_in, const std::string& suit_in):
+Card::Card(const std::string& rank_in, const std::string& suit_in) :
     rank(rank_in), suit(suit_in) {}
 
 //EFFECTS Returns the rank
@@ -98,7 +98,7 @@ bool Card::is_trump(const std::string& trump) const {
 
 //EFFECTS Returns true if lhs is lower value than rhs.
 //  Does not consider trump.
-bool operator<(const Card &lhs, const Card &rhs) {
+bool operator<(const Card& lhs, const Card& rhs) {
     int lhsRank = 0;
     int rhsRank = 0;
     for (int i = 0; i < NUM_RANKS; i++) {
@@ -109,27 +109,35 @@ bool operator<(const Card &lhs, const Card &rhs) {
             rhsRank = i;
         }
     }
-    int lhsSuit = 0;
-    int rhsSuit = 0;
-    for (int j = 0; j < NUM_SUITS; j++) {
-        if (lhs.get_suit() == SUIT_NAMES_BY_WEIGHT[j]) {
-            lhsSuit = j;
-        }
-        if (rhs.get_suit() == SUIT_NAMES_BY_WEIGHT[j]) {
-            rhsSuit = j;
-        }
-    }
-    if (lhsSuit < rhsSuit) {
+    if (lhsRank < rhsRank) {
         return true;
     }
-    else if (rhsSuit == lhsSuit) {
-        if (rhsRank > lhsRank) {
+    else if (lhsRank == rhsRank) {
+        int lhsSuit = 0;
+        int rhsSuit = 0;
+        for (int j = 0; j < NUM_SUITS; j++) {
+            if (lhs.get_suit() == SUIT_NAMES_BY_WEIGHT[j]) {
+                lhsSuit = j;
+            }
+            if (rhs.get_suit() == SUIT_NAMES_BY_WEIGHT[j]) {
+                rhsSuit = j;
+            }
+        }
+        if (lhsSuit < rhsSuit) {
             return true;
         }
-        return false;
+        else if (rhsSuit == lhsSuit) {
+            if (rhsRank > lhsRank) {
+                return true;
+            }
+            return false;
+        }
+        else {
+            //lhsSuit < rhsSuit
+            return false;
+        }
     }
     else {
-        //lhsSuit < rhsSuit
         return false;
     }
 }
@@ -137,19 +145,19 @@ bool operator<(const Card &lhs, const Card &rhs) {
 
 //EFFECTS Returns true if lhs is lower value than rhs or the same card as rhs.
 //  Does not consider trump.
-bool operator<=(const Card &lhs, const Card &rhs) {
+bool operator<=(const Card& lhs, const Card& rhs) {
     return lhs < rhs || lhs == rhs;
 }
 
 //EFFECTS Returns true if lhs is higher value than rhs.
 //  Does not consider trump.
-bool operator > (const Card &lhs, const Card &rhs) {
+bool operator > (const Card& lhs, const Card& rhs) {
     return !(lhs < rhs) && lhs != rhs;
 }
 
 //EFFECTS Returns true if lhs is higher value than rhs or the same card as rhs.
 //  Does not consider trump.
-bool operator>=(const Card &lhs, const Card &rhs) {
+bool operator>=(const Card& lhs, const Card& rhs) {
     if (lhs > rhs || lhs == rhs) {
         return true;
     }
@@ -157,7 +165,7 @@ bool operator>=(const Card &lhs, const Card &rhs) {
 }
 //EFFECTS Returns true if lhs is same card as rhs.
 //  Does not consider trump.
-bool operator==(const Card &lhs, const Card &rhs) {
+bool operator==(const Card& lhs, const Card& rhs) {
     int lhsRank = 0;
     int rhsRank = 0;
     for (int i = 0; i < NUM_RANKS; i++) {
@@ -186,13 +194,13 @@ bool operator==(const Card &lhs, const Card &rhs) {
 
 //EFFECTS Returns true if lhs is not the same card as rhs.
 //  Does not consider trump.
-bool operator!=(const Card &lhs, const Card &rhs) {
+bool operator!=(const Card& lhs, const Card& rhs) {
     return !(lhs == rhs);
 }
 
 //REQUIRES suit is a valid suit
 //EFFECTS returns the next suit, which is the suit of the same color
-std::string Suit_next(const std::string &suit) {
+std::string Suit_next(const std::string& suit) {
     if (suit == SUIT_NAMES_BY_WEIGHT[0]) {
         return SUIT_NAMES_BY_WEIGHT[2];
     }
@@ -271,7 +279,7 @@ bool Card_less(const Card& a, const Card& b, const Card& led_card,
             return false;
         }
         else if (b.get_suit() == led_card.get_suit()
-                 && a.get_suit() != led_card.get_suit()) {
+            && a.get_suit() != led_card.get_suit()) {
             //b is led card suit and a isn't
             return true;
         }
