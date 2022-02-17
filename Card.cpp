@@ -1,22 +1,38 @@
 // Project UID 1d9f47bfc76643019cfbf037641defe1
-
 #include <cassert>
 #include <iostream>
 #include <string>
 #include "Card.h"
 // add any necessary #include or using directives here
 
-//EFFECTS Initializes Card to the Two of Spades
+constexpr const char* const Card::RANK_TWO;
+constexpr const char* const Card::RANK_THREE;
+constexpr const char* const Card::RANK_FOUR;
+constexpr const char* const Card::RANK_FIVE;
+constexpr const char* const Card::RANK_SIX;
+constexpr const char* const Card::RANK_SEVEN;
+constexpr const char* const Card::RANK_EIGHT;
+constexpr const char* const Card::RANK_NINE;
+constexpr const char* const Card::RANK_TEN;
+constexpr const char* const Card::RANK_JACK;
+constexpr const char* const Card::RANK_QUEEN;
+constexpr const char* const Card::RANK_KING;
+constexpr const char* const Card::RANK_ACE;
+
+constexpr const char* const Card::SUIT_SPADES;
+constexpr const char* const Card::SUIT_HEARTS;
+constexpr const char* const Card::SUIT_CLUBS;
+constexpr const char* const Card::SUIT_DIAMONDS;
+
 Card::Card()
-    : rank(RANK_TWO), suit(SUIT_SPADES) {}
+    : rank(Card::RANK_TWO), suit(Card::SUIT_SPADES) {}
 
 //REQUIRES rank is one of "Two", "Three", "Four", "Five", "Six", "Seven",
 //  "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace"
 //  suit is one of "Spades", "Hearts", "Clubs", "Diamonds"
 //EFFECTS Initializes Card to specified rank and suit
 Card::Card(const std::string& rank_in, const std::string& suit_in):
-    rank(rank_in), suit(suit_in)
-{}
+    rank(rank_in), suit(suit_in) {}
 
 //EFFECTS Returns the rank
 std::string Card::get_rank() const {
@@ -40,7 +56,8 @@ std::string Card::get_suit(const std::string& trump) const {
 
 //EFFECTS Returns true if card is a face card (Jack, Queen, King or Ace)
 bool Card::is_face() const {
-    if (rank == RANK_JACK || rank == RANK_QUEEN || rank == RANK_KING || rank == RANK_ACE) {
+    if (rank == Card::RANK_JACK || rank == Card::RANK_QUEEN
+        || rank == Card::RANK_KING || rank == Card::RANK_ACE) {
         return true;
     }
     return false;
@@ -49,7 +66,7 @@ bool Card::is_face() const {
 //REQUIRES trump is a valid suit
 //EFFECTS Returns true if card is the Jack of the trump suit
 bool Card::is_right_bower(const std::string& trump) const {
-    if (rank == RANK_JACK && suit == trump) {
+    if (rank == Card::RANK_JACK && suit == trump) {
         return true;
     }
     return false;
@@ -59,10 +76,10 @@ bool Card::is_right_bower(const std::string& trump) const {
 //EFFECTS Returns true if card is the Jack of the next suit
 bool Card::is_left_bower(const std::string& trump) const {
     if (rank == RANK_JACK) {
-        if ((trump == SUIT_SPADES && suit == SUIT_CLUBS) ||
-            (trump == SUIT_CLUBS && suit == SUIT_SPADES) ||
-            (trump == SUIT_HEARTS && suit == SUIT_DIAMONDS) ||
-            (trump == SUIT_DIAMONDS && suit == SUIT_HEARTS)) {
+        if ((trump == Card::SUIT_SPADES && suit == Card::SUIT_CLUBS) ||
+            (trump == Card::SUIT_CLUBS && suit == Card::SUIT_SPADES) ||
+            (trump == Card::SUIT_HEARTS && suit == Card::SUIT_DIAMONDS) ||
+            (trump == Card::SUIT_DIAMONDS && suit == Card::SUIT_HEARTS)) {
             return true;
         }
     }
@@ -117,19 +134,17 @@ bool operator<(const Card &lhs, const Card &rhs) {
     }
 }
 
+
 //EFFECTS Returns true if lhs is lower value than rhs or the same card as rhs.
 //  Does not consider trump.
 bool operator<=(const Card &lhs, const Card &rhs) {
-    if (lhs < rhs || lhs == rhs) {
-        return true;
-    }
-    return false;
+    return lhs < rhs || lhs == rhs;
 }
 
 //EFFECTS Returns true if lhs is higher value than rhs.
 //  Does not consider trump.
-bool operator>(const Card &lhs, const Card &rhs) {
-    return !(lhs < rhs);
+bool operator > (const Card &lhs, const Card &rhs) {
+    return !(lhs < rhs) && lhs != rhs;
 }
 
 //EFFECTS Returns true if lhs is higher value than rhs or the same card as rhs.
@@ -140,11 +155,30 @@ bool operator>=(const Card &lhs, const Card &rhs) {
     }
     return false;
 }
-
 //EFFECTS Returns true if lhs is same card as rhs.
 //  Does not consider trump.
 bool operator==(const Card &lhs, const Card &rhs) {
-    if (!(lhs > rhs) && !(lhs < rhs)) {
+    int lhsRank = 0;
+    int rhsRank = 0;
+    for (int i = 0; i < NUM_RANKS; i++) {
+        if (lhs.get_rank() == RANK_NAMES_BY_WEIGHT[i]) {
+            lhsRank = i;
+        }
+        if (rhs.get_rank() == RANK_NAMES_BY_WEIGHT[i]) {
+            rhsRank = i;
+        }
+    }
+    int lhsSuit = 0;
+    int rhsSuit = 0;
+    for (int j = 0; j < NUM_SUITS; j++) {
+        if (lhs.get_suit() == SUIT_NAMES_BY_WEIGHT[j]) {
+            lhsSuit = j;
+        }
+        if (rhs.get_suit() == SUIT_NAMES_BY_WEIGHT[j]) {
+            rhsSuit = j;
+        }
+    }
+    if (lhsRank == rhsRank && lhsSuit == rhsSuit) {
         return true;
     }
     return false;
@@ -172,6 +206,7 @@ std::string Suit_next(const std::string &suit) {
         return SUIT_NAMES_BY_WEIGHT[1];
     }
 }
+
 
 //EFFECTS Prints Card to stream, for example "Two of Spades"
 std::ostream& operator<<(std::ostream& os, const Card& card) {
