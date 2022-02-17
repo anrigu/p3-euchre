@@ -69,7 +69,7 @@ public:
         Card minCard = handCards[0];
         int minInd = 0;
         for (int i = 1; i < handCards.size(); i++) {
-            if (handCards[i] < minCard) {
+            if (Card_less(handCards[i], minCard, upcard.get_suit())) {
                 minCard = handCards[i];
                 minInd = i;
             }
@@ -107,7 +107,26 @@ public:
     //EFFECTS  Plays one Card from Player's hand according to their strategy.
     //  The card is removed from the player's hand.
     Card play_card(const Card &led_card, const std::string &trump) override{
-        return Card();
+        Card maxLed;
+        int countLed = 0;
+        for (int i = 0; i < handCards.size(); i++) {
+            if (handCards[i].get_suit() == led_card.get_suit()){
+                countLed ++;
+                if(handCards[i] > maxLed) {
+                    maxLed = handCards[i];
+                }
+            }
+        }
+        if (countLed != 0) {
+            return maxLed;
+        }
+        Card lowestCard = handCards[0];
+        for (int i = 1; i < handCards.size(); i++) {
+            if (Card_less(handCards[i], lowestCard, trump)) {
+                lowestCard = handCards[i];
+            }
+        }
+        return lowestCard;
     }
 };
 

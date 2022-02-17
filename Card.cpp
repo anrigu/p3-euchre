@@ -8,7 +8,7 @@
 
 //EFFECTS Initializes Card to the Two of Spades
 Card::Card()
-    : rank(RANK_TWO), suit(SUIT_SPADES) {};
+    : rank(RANK_TWO), suit(SUIT_SPADES) {}
 
 //REQUIRES rank is one of "Two", "Three", "Four", "Five", "Six", "Seven",
 //  "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace"
@@ -16,7 +16,7 @@ Card::Card()
 //EFFECTS Initializes Card to specified rank and suit
 Card::Card(const std::string& rank_in, const std::string& suit_in):
     rank(rank_in), suit(suit_in)
-{};
+{}
 
 //EFFECTS Returns the rank
 std::string Card::get_rank() const {
