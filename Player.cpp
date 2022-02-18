@@ -90,30 +90,38 @@ public:
         for (int i = 0; i < static_cast<int>(handCards.size()); i++) {
             if (handCards[i].get_suit(trump) != trump) {
                 Card maxNonTrump;
+                int maxNonInd = 0;
                 for (int j = 0; j < static_cast<int>(handCards.size()); j++) {
                     if (handCards[j] > maxNonTrump
                         && handCards[j].get_suit(trump) != trump) {
                         maxNonTrump = handCards[j];
+                        maxNonInd = j;
                     }
                 }
+                handCards.erase(handCards.begin() + maxNonInd);
                 return maxNonTrump;
             }
 
         }
         Card maxTrump;
+        int maxTrumpInd = 0;
         Card jack_trump = Card(Card::RANK_JACK, trump);
         Card jack_left_bower = Card(Card::RANK_JACK, Suit_next(trump));
         for (int j = 1; j < static_cast<int>(handCards.size()); j++) {
             if (handCards[j] == jack_trump) {
+                handCards.erase(handCards.begin() + j);
                 return jack_trump;
             }
             if (handCards[j] == jack_left_bower) {
+                handCards.erase(handCards.begin() + j);
                 return jack_left_bower;
             }
             if (handCards[j] > maxTrump) {
                 maxTrump = handCards[j];
+                maxTrumpInd = j;
             }
         }
+        handCards.erase(handCards.begin() + maxTrumpInd);
         return maxTrump;
     }
 
