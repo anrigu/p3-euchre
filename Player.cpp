@@ -170,146 +170,31 @@ public:
 };
 
 
-
-
-//class HumanPlayer : public Player {
-//private:
-//    string name;
-//    vector<Card>handCards;
-//public:
-//    const std::string & get_name() const override {
-//        return name;
-//    }
-//
-//    //REQUIRES player has less than MAX_HAND_SIZE cards
-//    //EFFECTS  adds Card c to Player's hand
-//    void add_card(const Card &c) override {
-//        handCards.push_back(c);
-//    }
-//
-//    //REQUIRES round is 1 or 2
-//    //MODIFIES order_up_suit
-//    //EFFECTS If Player wishes to order up a trump suit then return true and
-//    //  change order_up_suit to desired suit.  If Player wishes to pass, then do
-//    //  not modify order_up_suit and return false.
-//    bool make_trump(const Card &upcard, bool is_dealer,
-//                    int round, std::string &order_up_suit) const override {
-//        string suit;
-//        sort(handCards.begin(), handCards.end());
-//        for (int i = 0; i < handCards.size(); i++) {
-//            cout << "Human player " << name << "'s hand: " << "[" << i << "] "
-//                 << handCards[i] << endl;
-//        }
-//        cout << "Human player " << name << ", please enter a suit, or \"pass\": ";
-//        cin >> suit;
-//        if (suit == "pass") {
-//            cout << name << " passes" << endl;
-//            return false;
-//        }
-//        else {
-//            cout << name << " orders up " << suit << endl;
-//            order_up_suit = suit;
-//            return true;
-//        }
-//    }
-//
-//    //REQUIRES Player has at least one card
-//    //EFFECTS  Player adds one card to hand and removes one card from hand.
-//    void add_and_discard(const Card &upcard) override{
-//        sort(handCards.begin(), handCards.end());
-//        for (int i = 0; i < handCards.size(); i++) {
-//            cout << "Human player " << name << "'s hand: " << "[" << i << "] "
-//                 << handCards[i] << endl;
-//        }
-//        string discardUpcard;
-//        string discardCard;
-//        cout << "Discard upcard: " << endl;
-//        cin >> discardUpcard;
-//        if (discardUpcard == "[-1]") {
-//            handCards.erase(handCards.end());
-//        }
-//        cout << "Human player" << name
-//             << " , please select a card to discard:" << endl;
-//        cin >> discardCard;
-//    }
-//
-//    //REQUIRES Player has at least one card, trump is a valid suit
-//    //EFFECTS  Leads one Card from Player's hand according to their strategy
-//    //  "Lead" means to play the first Card in a trick.  The card
-//    //  is removed the player's hand.
-//    Card lead_card(const std::string &trump) override{
-//        int cardPlay;
-//        sort(handCards.begin(), handCards.end());
-//        for (int i = 0; i < handCards.size(); i++) {
-//            cout << "Human player " << name << "'s hand: " << "[" << i << "] "
-//                 << handCards[i] << endl;
-//        }
-//        cin >> cardPlay;
-//        for (int i = 0; i < handCards.size(); i++) {
-//            if (handCards[i].get_suit() != trump) {
-//                Card maxNonTrump;
-//                for (int j = 0; j < handCards.size(); j++) {
-//                    if (handCards[j] > maxNonTrump && handCards[j].get_suit() != trump) {
-//                        maxNonTrump = handCards[j];
-//                    }
-//                }
-//                return maxNonTrump;
-//            }
-//
-//        }
-//        Card maxTrump;
-//        for (int j = 1; j < handCards.size(); j++) {
-//            if (handCards[j] > maxTrump) {
-//                maxTrump = handCards[j];
-//            }
-//        }
-//        return maxTrump;
-//    }
-//
-//    //REQUIRES Player has at least one card, trump is a valid suit
-//    //EFFECTS  Plays one Card from Player's hand according to their strategy.
-//    //  The card is removed from the player's hand.
-//    Card play_card(const Card &led_card, const std::string &trump) override{
-//        Card maxLed;
-//        int countLed = 0;
-//        for (int i = 0; i < handCards.size(); i++) {
-//            if (handCards[i].get_suit() == led_card.get_suit()){
-//                countLed ++;
-//                if(handCards[i] > maxLed) {
-//                    maxLed = handCards[i];
-//                }
-//            }
-//        }
-//        if (countLed != 0) {
-//            return maxLed;
-//        }
-//        Card lowestCard = handCards[0];
-//        for (int i = 1; i < handCards.size(); i++) {
-//            if (Card_less(handCards[i], lowestCard, trump)) {
-//                lowestCard = handCards[i];
-//            }
-//        }
-//        return lowestCard;
-//    }
-//};
-
 class HumanPlayer : public Player {
 private:
     string name;
     vector<Card>handCards;
-
 public:
     HumanPlayer(string name_in)
         : name(name_in) {}
 
-    //EFFECTS returns player's name
-    const std::string & get_name() const override{
+    const std::string & get_name() const override {
         return name;
     }
 
     //REQUIRES player has less than MAX_HAND_SIZE cards
     //EFFECTS  adds Card c to Player's hand
-    void add_card(const Card &c) override {}
+    void add_card(const Card &c) override {
+        handCards.push_back(c);
+    }
+
+    void print_hand() const {
+        sort(handCards.begin(), handCards.end());
+        for (int i = 0; i < handCards.size(); i++) {
+            cout << "Human player " << name << "'s hand: " << "[" << i << "] "
+                 << handCards[i] << endl;
+        }
+    }
 
     //REQUIRES round is 1 or 2
     //MODIFIES order_up_suit
@@ -318,26 +203,56 @@ public:
     //  not modify order_up_suit and return false.
     bool make_trump(const Card &upcard, bool is_dealer,
                     int round, std::string &order_up_suit) const override {
-        return true;
+        string suit;
+        print_hand();
+        cout << "Human player " << name << ", please enter a suit, or \"pass\": ";
+        cin >> suit;
+        if (suit == "pass") {
+            cout << name << " passes" << endl;
+            return false;
+        }
+        else {
+            cout << name << " orders up " << suit << endl;
+            order_up_suit = suit;
+            return true;
+        }
     }
 
     //REQUIRES Player has at least one card
     //EFFECTS  Player adds one card to hand and removes one card from hand.
-    void add_and_discard(const Card &upcard) override {}
+    void add_and_discard(const Card &upcard) override{
+        print_hand();
+        string discardUpcard;
+        int discardCardInd;
+        string junk;
+        cout << "Discard upcard: " << endl;
+        cin >> discardUpcard;
+        if (discardUpcard == "[-1]") {
+            handCards.erase(handCards.end());
+        }
+        cout << "Human player" << name
+             << " , please select a card to discard:" << endl;
+        cin >> junk >> discardCardInd >> junk;
+        handCards.erase(handCards.begin() + discardCardInd);
+    }
 
     //REQUIRES Player has at least one card, trump is a valid suit
     //EFFECTS  Leads one Card from Player's hand according to their strategy
     //  "Lead" means to play the first Card in a trick.  The card
     //  is removed the player's hand.
-    Card lead_card(const std::string &trump) override {
-        return Card();
+    Card lead_card(const std::string &trump) override{
+        int cardPlay;
+        print_hand();
+        cin >> cardPlay;
+        handCards.erase(handCards.begin() + cardPlay);
+        return handCards[cardPlay];
     }
 
     //REQUIRES Player has at least one card, trump is a valid suit
     //EFFECTS  Plays one Card from Player's hand according to their strategy.
     //  The card is removed from the player's hand.
-    Card play_card(const Card &led_card, const std::string &trump) override {
-        return Card();
+    Card play_card(const Card &led_card, const std::string &trump) override{
+        return lead_card(trump);
     }
 };
 
