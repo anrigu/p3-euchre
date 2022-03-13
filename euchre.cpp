@@ -16,6 +16,7 @@ private:
     int numWinPoints;
     int trumpPartnershipWins;
     Card trumpCard;
+    string trumpSuit;
     int leadPlayer;
     int orderUpPlayer;
     int partner0and2;
@@ -33,6 +34,8 @@ public:
         partner1and3 = 0;
         handNum = 0;
         trumpPartnershipWins = 0;
+        trumpCard = Card();
+        trumpSuit = trumpCard.get_suit();
         orderUpPlayer = 0;
         if (shuffle_in == "shuffle") {
             shuffleCards = true;
@@ -49,14 +52,11 @@ public:
     }
 
     void rearrangeDealer() {
-        Player *temp = players[static_cast<int>(players.size() - 1)];
-        Player *temp2;
+        Player *temp = players[0];
         for (int i = 1; i < static_cast<int>(players.size()); i++) {
-            temp2 = players[0];
-            players[0] = players[i];
-            players[i] = temp2;
+            players[i - 1] = players[i];
         }
-        players[0] = temp;
+        players[static_cast<int>(players.size() - 1)] = temp;
     }
 
     void dealCards() {
@@ -84,29 +84,36 @@ public:
 
     void decideTrump() {
         int currBidder = 1;
+        int iterator = currBidder;
         trumpCard = pack.deal_one();
-        string trumpSuit = trumpCard.get_suit();
+        trumpSuit = trumpCard.get_suit();
         cout << "Hand " << handNum << endl;
         cout << players[0]->get_name() << " deals" << endl;
         cout << trumpCard.get_rank() << " of " << trumpCard.get_suit()
         << " turned up" << endl;
         for (int round = 1; round <= 2; round ++) {
-            while (currBidder <= 3) {
-                if (players[currBidder]->make_trump(trumpCard, currBidder == 0,
+            while (currBidder <= 4) {
+                iterator = currBidder;
+                if (currBidder == 4) {
+                    iterator = 0;
+                }
+                if (players[iterator]->make_trump(trumpCard, iterator == 0,
                                                     round, trumpSuit)) {
+                    cout << players[iterator]->get_name()
+                         << " orders up " << trumpSuit << endl << endl;
                     if (round == 1) {
                         players[0]->add_and_discard(trumpCard);
                     }
-                    orderUpPlayer = currBidder;
-                    currBidder = 4; //To break the loop
+                    orderUpPlayer = iterator;
+                    currBidder = 5; //To break the loop
                     round = 3;
                 }
                 else {
-                    cout << players[currBidder]->get_name() << " passes" << endl;
+                    cout << players[iterator]->get_name() << " passes" << endl;
                 }
                 currBidder ++;
             }
-            currBidder = 0;
+            currBidder = 1;
 
         }
         handNum ++;
@@ -114,7 +121,10 @@ public:
 
     void playedCards() {
         int maxPlayerInd = leadPlayer;
-        Card maxCard = players[leadPlayer]->lead_card(trumpCard.get_suit());
+        Card maxCard = players[leadPlayer]->lead_card(trumpSuit);
+        Card ledCard = maxCard;
+        cout << maxCard.get_rank() << " of " << maxCard.get_suit()
+             << " led by " << players[leadPlayer]->get_name() << endl;
         leadPlayer ++;
         int play = 1;
         while (play != 4) {
@@ -122,8 +132,10 @@ public:
                 leadPlayer %= 4;
             }
             Card playedCard = players[leadPlayer]->play_card(maxCard,
-                                                             trumpCard.get_suit());
-            if (!Card_less(playedCard, maxCard, trumpCard.get_suit())) {
+                                                             trumpSuit);
+            cout << playedCard.get_rank() << " of " << playedCard.get_suit()
+                 << " played by " << players[leadPlayer]->get_name() << endl;
+            if (!Card_less(playedCard, maxCard, ledCard, trumpSuit)) {
                 maxCard = playedCard;
                 maxPlayerInd = leadPlayer;
             }
@@ -192,22 +204,21 @@ public:
              << players[2]->get_name() << " have " << partner0and2 << " points" << endl;
         cout << players[1]->get_name() << " and " << players[3]->get_name()
              << " have " << partner1and3 << " points" << endl << endl;
-        rearrangeDealer();
     }
 
-
-
     bool gameOver() {
-        if (partner0and2 == numWinPoints) {
+        if (partner0and2 >= numWinPoints) {
             cout << players[0]->get_name() << " and "
             << players[2]->get_name() << " wins!" << endl;
             return true;
         }
-        else if (partner1and3 == numWinPoints) {
+        else if (partner1and3 >= numWinPoints) {
             cout << players[1]->get_name() << " and "
             << players[3]->get_name() << " wins!" << endl;
             return true;
         }
+        rearrangeDealer();
+        pack.reset();
         return false;
     }
 
@@ -252,13 +263,16 @@ int main(int argc, char* argv[]) {
     int numPointsWin = atoi(argv[3]);
     Pack pack(in);
     Game game(shuffle, numPointsWin, argv, pack);
-
-    while (!game.gameOver()) {
+    bool gameIsOver = false;
+    while (!gameIsOver) {
         game.shuffle();
         game.dealCards();
         game.decideTrump();
         game.roundPlay();
         game.gamePointTrack();
         game.scorePrint();
+        if (game.gameOver()) {
+            gameIsOver = true;
+        }
     }
 }

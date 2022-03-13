@@ -106,20 +106,10 @@ public:
         }
         Card maxTrump;
         int maxTrumpInd = 0;
-        Card jack_trump = Card(Card::RANK_JACK, trump);
-        Card jack_left_bower = Card(Card::RANK_JACK, Suit_next(trump));
-        for (int j = 1; j < static_cast<int>(handCards.size()); j++) {
-            if (handCards[j] == jack_trump) {
-                handCards.erase(handCards.begin() + j);
-                return jack_trump;
-            }
-            if (handCards[j] == jack_left_bower) {
-                handCards.erase(handCards.begin() + j);
-                return jack_left_bower;
-            }
-            if (handCards[j] > maxTrump) {
-                maxTrump = handCards[j];
+        for (int j = 0; j < static_cast<int>(handCards.size()); j++) {
+            if (!Card_less(handCards[j], maxTrump, trump)) {
                 maxTrumpInd = j;
+                maxTrump = handCards[j];
             }
         }
         handCards.erase(handCards.begin() + maxTrumpInd);
@@ -213,7 +203,6 @@ public:
             return false;
         }
         else {
-            cout << name << " orders up " << suit << endl;
             order_up_suit = suit;
             return true;
         }
@@ -248,8 +237,6 @@ public:
         cin >> cardPlay;
         cardPlayed = handCards[cardPlay];
         handCards.erase(handCards.begin() + cardPlay);
-        cout << cardPlayed.get_rank() << " of " << cardPlayed.get_suit()
-             << " led by " << name << endl;
         return cardPlayed;
     }
 
@@ -264,8 +251,6 @@ public:
         cin >> cardPlay;
         cardPlayed = handCards[cardPlay];
         handCards.erase(handCards.begin() + cardPlay);
-        cout << cardPlayed.get_rank() << " of " << cardPlayed.get_suit()
-             << " played by " << name << endl;
         return cardPlayed;
     }
 };
