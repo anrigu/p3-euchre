@@ -10,7 +10,7 @@ private:
     vector<Card>handCards;
 public:
     SimplePlayer(string name_in)
-        : name(name_in) {}
+    : name(name_in) {}
 
     const std::string & get_name() const override {
         return name;
@@ -88,21 +88,19 @@ public:
     //  "Lead" means to play the first Card in a trick.  The card
     //  is removed the player's hand.
     Card lead_card(const std::string &trump) override{
+        Card maxNonTrump;
+        int maxNonInd = -1;
         for (int i = 0; i < static_cast<int>(handCards.size()); i++) {
             if (handCards[i].get_suit(trump) != trump) {
-                Card maxNonTrump;
-                int maxNonInd = 0;
-                for (int j = 0; j < static_cast<int>(handCards.size()); j++) {
-                    if (handCards[j] > maxNonTrump
-                        && handCards[j].get_suit(trump) != trump) {
-                        maxNonTrump = handCards[j];
-                        maxNonInd = j;
-                    }
+                if (handCards[i] > maxNonTrump) {
+                    maxNonTrump = handCards[i];
+                    maxNonInd = i;
                 }
-                handCards.erase(handCards.begin() + maxNonInd);
-                return maxNonTrump;
             }
-
+        }
+        if (maxNonInd != -1) {
+            handCards.erase(handCards.begin() + maxNonInd);
+            return maxNonTrump;
         }
         Card maxTrump;
         int maxTrumpInd = 0;
@@ -167,7 +165,7 @@ private:
     vector<Card>handCards;
 public:
     HumanPlayer(string name_in)
-        : name(name_in) {}
+    : name(name_in) {}
 
     const std::string & get_name() const override {
         return name;
@@ -177,14 +175,13 @@ public:
     //EFFECTS  adds Card c to Player's hand
     void add_card(const Card &c) override {
         handCards.push_back(c);
+        sort(handCards.begin(), handCards.end());
     }
 
     void print_hand() const {
-        vector<Card>handCardsCopy = handCards;
-        sort(handCardsCopy.begin(), handCardsCopy.end());
         for (int i = 0; i < static_cast<int>(handCards.size()); i++) {
             cout << "Human player " << name << "'s hand: " << "[" << i << "] "
-                 << handCards[i] << endl;
+            << handCards[i] << endl;
         }
     }
 
@@ -199,6 +196,7 @@ public:
         print_hand();
         cout << "Human player " << name << ", please enter a suit, or \"pass\":";
         cin >> suit;
+        cout << endl;
         if (suit == "pass") {
             return false;
         }
@@ -215,7 +213,7 @@ public:
         int discardUpcard;
         string junk;
         cout << "Discard upcard: [-1]\n" << "Human player " << name
-             << ", please select a card to discard:";
+        << ", please select a card to discard:";
         cin >> discardUpcard;
         cout << endl;
         if (discardUpcard == -1) {
@@ -223,6 +221,7 @@ public:
         }
         handCards.push_back(upcard);
         handCards.erase(handCards.begin() + discardUpcard);
+        sort(handCards.begin(), handCards.end());
     }
 
     //REQUIRES Player has at least one card, trump is a valid suit
@@ -235,6 +234,7 @@ public:
         print_hand();
         cout << "Human player " << name << ", please select a card:";
         cin >> cardPlay;
+        cout << endl;
         cardPlayed = handCards[cardPlay];
         handCards.erase(handCards.begin() + cardPlay);
         return cardPlayed;
@@ -249,6 +249,7 @@ public:
         print_hand();
         cout << "Human player " << name << ", please select a card:";
         cin >> cardPlay;
+        cout << endl;
         cardPlayed = handCards[cardPlay];
         handCards.erase(handCards.begin() + cardPlay);
         return cardPlayed;
@@ -262,16 +263,16 @@ public:
 //Don't forget to call "delete" on each Player* after the game is over
 Player * Player_factory(const std::string &name,
                         const std::string &strategy) {
-  // We need to check the value of strategy and return
-  // the corresponding player type.
+    // We need to check the value of strategy and return
+    // the corresponding player type.
     if (strategy == "Simple") {
-    // The "new" keyword dynamically allocates an object.
+        // The "new" keyword dynamically allocates an object.
         return new SimplePlayer(name);
     }
     else {
         return new HumanPlayer(name);
     }
-//    assert(false);
+    //    assert(false);
     return nullptr;
 }
 

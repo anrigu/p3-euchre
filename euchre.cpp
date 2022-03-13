@@ -7,6 +7,35 @@
 
 using namespace std;
 
+class PointKeeping {
+private:
+    string partner1;
+    string partner2;
+    int numPoints;
+public:
+    PointKeeping()
+    : partner1(""), partner2(""), numPoints(0) {}
+
+    PointKeeping(string partner1_in, string partner2_in)
+    : partner1(partner1_in), partner2(partner2_in), numPoints(0) {}
+
+    bool checkPartnership(string name1) {
+        return name1 == partner1 || name1 == partner2;
+    }
+    void addPoints(int numAdd) {
+        numPoints += numAdd;
+    }
+    int getNumPoints() {
+        return numPoints;
+    }
+    string getPartner1() {
+        return partner1;
+    }
+    string getPartner2() {
+        return partner2;
+    }
+};
+
 class Game {
 private:
     vector<Player*> players;
@@ -19,19 +48,19 @@ private:
     string trumpSuit;
     int leadPlayer;
     int orderUpPlayer;
-    int partner0and2;
-    int partner1and3;
+    PointKeeping partner0_2;
+    PointKeeping partner1_3;
     int handNum;
 
 public:
     Game(string shuffle_in, int numWinPoints_in, char *argv[], Pack pack_in)
-    : numWinPoints(numWinPoints_in), pack(pack_in) {
+    : pack(pack_in), numWinPoints(numWinPoints_in) {
         players = {Player_factory(argv[4], argv[5]),
             Player_factory(argv[6], argv[7]), Player_factory(argv[8], argv[9]),
             Player_factory(argv[10], argv[11])};
         leadPlayer = 1;
-        partner0and2 = 0;
-        partner1and3 = 0;
+        partner0_2 = PointKeeping(players[0]->get_name(), players[2]->get_name());
+        partner1_3 = PointKeeping(players[1]->get_name(), players[3]->get_name());
         handNum = 0;
         trumpPartnershipWins = 0;
         trumpCard = Card();
@@ -97,13 +126,21 @@ public:
                 if (currBidder == 4) {
                     iterator = 0;
                 }
-                if (players[iterator]->make_trump(trumpCard, iterator == 0,
-                                                    round, trumpSuit)) {
+                bool orderedUp = players[iterator]->make_trump(trumpCard, iterator == 0,
+                                                               round, trumpSuit);
+                if (orderedUp && round == 1) {
                     cout << players[iterator]->get_name()
-                         << " orders up " << trumpSuit << endl << endl;
-                    if (round == 1) {
-                        players[0]->add_and_discard(trumpCard);
-                    }
+                    << " orders up " << trumpSuit << endl;
+                    players[0]->add_and_discard(trumpCard);
+                    cout << endl;
+                    orderUpPlayer = iterator;
+                    currBidder = 5; //To break the loop
+                    round = 3;
+                }
+                else if (orderedUp) {
+                    cout << players[iterator]->get_name()
+                    << " orders up " << trumpSuit << endl;
+                    cout << endl;
                     orderUpPlayer = iterator;
                     currBidder = 5; //To break the loop
                     round = 3;
@@ -114,7 +151,6 @@ public:
                 currBidder ++;
             }
             currBidder = 1;
-
         }
         handNum ++;
     }
@@ -124,17 +160,17 @@ public:
         Card maxCard = players[leadPlayer]->lead_card(trumpSuit);
         Card ledCard = maxCard;
         cout << maxCard.get_rank() << " of " << maxCard.get_suit()
-             << " led by " << players[leadPlayer]->get_name() << endl;
+        << " led by " << players[leadPlayer]->get_name() << endl;
         leadPlayer ++;
         int play = 1;
         while (play != 4) {
             if (leadPlayer > 3) {
                 leadPlayer %= 4;
             }
-            Card playedCard = players[leadPlayer]->play_card(maxCard,
+            Card playedCard = players[leadPlayer]->play_card(ledCard,
                                                              trumpSuit);
             cout << playedCard.get_rank() << " of " << playedCard.get_suit()
-                 << " played by " << players[leadPlayer]->get_name() << endl;
+            << " played by " << players[leadPlayer]->get_name() << endl;
             if (!Card_less(playedCard, maxCard, ledCard, trumpSuit)) {
                 maxCard = playedCard;
                 maxPlayerInd = leadPlayer;
@@ -142,7 +178,7 @@ public:
             play ++;
             leadPlayer ++;
         }
-        if (maxPlayerInd == orderUpPlayer || maxPlayerInd == orderUpPlayer + 2) {
+        if (maxPlayerInd % 2 == orderUpPlayer % 2) {
             trumpPartnershipWins ++;
         }
         leadPlayer = maxPlayerInd;
@@ -155,66 +191,70 @@ public:
         }
     }
 
-    void gamePointTrack() {
-        if(orderUpPlayer == 0 || orderUpPlayer == 2 ) {
-            if(trumpPartnershipWins > 2 && trumpPartnershipWins < 5) {
-                partner0and2++;
-                cout << players[0]->get_name() << " and " << players[2]->get_name()
-                << " win the hand" << endl;
-            }
-            else if(trumpPartnershipWins == 5){
-                partner0and2 += 2;
-                cout << players[0]->get_name() << " and " << players[2]->get_name()
-                << " win the hand" << endl;
-                cout << "march!" << endl;
-            }
-            else {
-                partner1and3 +=2;
-                cout << players[1]->get_name() << " and " << players[3]->get_name()
-                << " win the hand" << endl;
-                cout << "euchred!" << endl;
-            }
+    void majorityHandsWon(PointKeeping *partnership1, PointKeeping *partnership2) {
+        if (trumpPartnershipWins > 2 && trumpPartnershipWins < 5) {
+            partnership1->addPoints(1);
+            cout << partnership1->getPartner1()
+                 << " and " << partnership1->getPartner2()
+                 << " win the hand" << endl;
+            return;
         }
-        else if(orderUpPlayer == 1 || orderUpPlayer == 3 ) {
-            if(trumpPartnershipWins > 2 && trumpPartnershipWins < 5) {
-                partner1and3++;
-                cout << players[1]->get_name() << " and " << players[3]->get_name()
-                << " win the hand" << endl;
-            }
-            else if(trumpPartnershipWins == 5){
-                partner1and3 += 2;
-                cout << players[1]->get_name() << " and " << players[3]->get_name()
-                << " win the hand" << endl;
-                cout << "march!" << endl;
-            }
-            else {
-                partner0and2 +=2;
-                cout << players[0]->get_name() << " and " << players[2]->get_name()
-                << " win the hand" << endl;
-                cout << "euchred!" << endl;
-            }
+        else if(trumpPartnershipWins == 5) {
+            partnership1->addPoints(2);
+            cout << partnership1->getPartner1()
+                 << " and " << partnership1->getPartner2()
+                 << " win the hand" << endl;
+            cout << "march!" << endl;
+            return;
+        }
+        else {
+            partnership2->addPoints(2);
+            cout << partnership2->getPartner1()
+                 << " and " << partnership2->getPartner2()
+                 << " win the hand" << endl;
+            cout << "euchred!" << endl;
+            return;
+        }
+    }
+
+    void gamePointTrack() {
+        //If the original 0_2 partnership were trump
+        if (partner0_2.checkPartnership(players[orderUpPlayer]->get_name())) {
+            majorityHandsWon(&partner0_2, &partner1_3);
+        }
+        else {
+            majorityHandsWon(&partner1_3, &partner0_2);
         }
         trumpPartnershipWins = 0;
         leadPlayer = 1;
-
     }
 
     void scorePrint() {
-        cout << players[0]->get_name() << " and "
-             << players[2]->get_name() << " have " << partner0and2 << " points" << endl;
-        cout << players[1]->get_name() << " and " << players[3]->get_name()
-             << " have " << partner1and3 << " points" << endl << endl;
+        cout << partner0_2.getPartner1() << " and "
+        << partner0_2.getPartner2() << " have "
+        << partner0_2.getNumPoints() << " points" << endl;
+        cout << partner1_3.getPartner1() << " and "
+        << partner1_3.getPartner2() << " have "
+        << partner1_3.getNumPoints() << " points" << endl << endl;
     }
 
     bool gameOver() {
-        if (partner0and2 >= numWinPoints) {
-            cout << players[0]->get_name() << " and "
-            << players[2]->get_name() << " wins!" << endl;
+        if (partner0_2.getNumPoints() >= numWinPoints) {
+            cout << partner0_2.getPartner1() << " and "
+            << partner0_2.getPartner2() << " win!" << endl;
+            delete players[0];
+            delete players[1];
+            delete players[2];
+            delete players[3];
             return true;
         }
-        else if (partner1and3 >= numWinPoints) {
-            cout << players[1]->get_name() << " and "
-            << players[3]->get_name() << " wins!" << endl;
+        else if (partner1_3.getNumPoints() >= numWinPoints) {
+            cout << partner1_3.getPartner1() << " and "
+            << partner1_3.getPartner2() << " win!" << endl;
+            delete players[0];
+            delete players[1];
+            delete players[2];
+            delete players[3];
             return true;
         }
         rearrangeDealer();
@@ -245,6 +285,13 @@ bool checkErrors(int argc, char* argv[]) {
     return true;
 }
 
+void printArgs(char* argv[], int argc) {
+    for(int i = 0; i < argc; i++) {
+            cout << argv[i] << " ";
+    }
+    cout << endl;
+}
+
 int main(int argc, char* argv[]) {
     if (!checkErrors(argc, argv)) {
         cout << "Usage: euchre.exe PACK_FILENAME [shuffle|noshuffle] "
@@ -252,6 +299,7 @@ int main(int argc, char* argv[]) {
         << "NAME4 TYPE4" << endl;
         return 1;
     }
+    printArgs(argv, argc);
     ifstream in;
     string pack_filename = argv[1];
     in.open(pack_filename);
@@ -275,4 +323,5 @@ int main(int argc, char* argv[]) {
             gameIsOver = true;
         }
     }
+    in.close();
 }
