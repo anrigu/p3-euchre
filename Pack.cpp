@@ -16,7 +16,8 @@ Pack::Pack() {
     int cards_ind = 0;
     for (int i = 0; i < NUM_SUITS; i++) {
         for (int j = 7; j < NUM_RANKS; j++) {
-            cards[cards_ind] = Card(SUIT_NAMES_BY_WEIGHT[i], RANK_NAMES_BY_WEIGHT[j]);
+            cards[cards_ind] = Card(RANK_NAMES_BY_WEIGHT[j], SUIT_NAMES_BY_WEIGHT[i]);
+            cards_ind ++;
         }
     }
     //See what to do w/ this later
@@ -78,7 +79,7 @@ void Pack::shuffle() {
 
 // EFFECTS: returns true if there are no more cards left in the pack
 bool Pack::empty() const {
-    if (cards.empty() == 1) {
+    if (next == PACK_SIZE) {
         return true;
     }
     else {
