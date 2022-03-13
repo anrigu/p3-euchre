@@ -52,7 +52,8 @@ public:
             }
             int countAdjCards = 0;
             for (int i = 0; i < static_cast<int>(handCards.size()); i++) {
-                if (handCards[i].is_face() && handCards[i].is_trump(Suit_next(upcard.get_suit()))) {
+                if (handCards[i].is_face() &&
+                    handCards[i].is_trump(Suit_next(upcard.get_suit()))) {
                     countAdjCards ++;
                 }
             }
@@ -189,8 +190,9 @@ public:
     }
 
     void print_hand() const {
-        sort(handCards.begin(), handCards.end());
-        for (int i = 0; i < handCards.size(); i++) {
+        vector<Card>handCardsCopy = handCards;
+        sort(handCardsCopy.begin(), handCardsCopy.end());
+        for (int i = 0; i < static_cast<int>(handCards.size()); i++) {
             cout << "Human player " << name << "'s hand: " << "[" << i << "] "
                  << handCards[i] << endl;
         }
@@ -205,10 +207,9 @@ public:
                     int round, std::string &order_up_suit) const override {
         string suit;
         print_hand();
-        cout << "Human player " << name << ", please enter a suit, or \"pass\": ";
+        cout << "Human player " << name << ", please enter a suit, or \"pass\":";
         cin >> suit;
         if (suit == "pass") {
-            cout << name << " passes" << endl;
             return false;
         }
         else {
@@ -222,18 +223,17 @@ public:
     //EFFECTS  Player adds one card to hand and removes one card from hand.
     void add_and_discard(const Card &upcard) override{
         print_hand();
-        string discardUpcard;
-        int discardCardInd;
+        int discardUpcard;
         string junk;
-        cout << "Discard upcard: " << endl;
+        cout << "Discard upcard: [-1]\n" << "Human player " << name
+             << ", please select a card to discard:";
         cin >> discardUpcard;
-        if (discardUpcard == "[-1]") {
-            handCards.erase(handCards.end());
+        cout << endl;
+        if (discardUpcard == -1) {
+            return;
         }
-        cout << "Human player" << name
-             << " , please select a card to discard:" << endl;
-        cin >> junk >> discardCardInd >> junk;
-        handCards.erase(handCards.begin() + discardCardInd);
+        handCards.push_back(upcard);
+        handCards.erase(handCards.begin() + discardUpcard);
     }
 
     //REQUIRES Player has at least one card, trump is a valid suit
@@ -241,18 +241,32 @@ public:
     //  "Lead" means to play the first Card in a trick.  The card
     //  is removed the player's hand.
     Card lead_card(const std::string &trump) override{
+        Card cardPlayed;
         int cardPlay;
         print_hand();
+        cout << "Human player " << name << ", please select a card:";
         cin >> cardPlay;
+        cardPlayed = handCards[cardPlay];
         handCards.erase(handCards.begin() + cardPlay);
-        return handCards[cardPlay];
+        cout << cardPlayed.get_rank() << " of " << cardPlayed.get_suit()
+             << " led by " << name << endl;
+        return cardPlayed;
     }
 
     //REQUIRES Player has at least one card, trump is a valid suit
     //EFFECTS  Plays one Card from Player's hand according to their strategy.
     //  The card is removed from the player's hand.
     Card play_card(const Card &led_card, const std::string &trump) override{
-        return lead_card(trump);
+        Card cardPlayed;
+        int cardPlay;
+        print_hand();
+        cout << "Human player " << name << ", please select a card:";
+        cin >> cardPlay;
+        cardPlayed = handCards[cardPlay];
+        handCards.erase(handCards.begin() + cardPlay);
+        cout << cardPlayed.get_rank() << " of " << cardPlayed.get_suit()
+             << " played by " << name << endl;
+        return cardPlayed;
     }
 };
 
